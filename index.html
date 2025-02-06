@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Corrupção</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Calculadora de Corrupção</h1>
+    
+    <div>
+        <div>
+            <label for="anos">Anos de governo:</label>
+            <input type="number" id="anos" value="8" min="1" onchange="calcularCorrupcao()">
+        </div>
+    </div>
+    
+    
+    <button onclick="calcularCorrupcao()">Calcular</button>
+    
+    <h2>Resultados</h2>
+    <table>
+        <thead>
+            <tr><th>Cargo</th><th>Desvio Estimado</th></tr>
+        </thead>
+        <tbody id="resultado"></tbody>
+    </table>
+    <p id="total"></p>
+    
+    <script>
+        function formatarValor(valor) {
+            if (valor >= 1_000_000_000) {
+                return `R$ ${(valor / 1_000_000_000).toFixed(2)} bilhões`;
+            } else if (valor >= 1_000_000) {
+                return `R$ ${(valor / 1_000_000).toFixed(2)} milhões`;
+            } else if (valor >= 1_000) {
+                return `R$ ${(valor / 1_000).toFixed(2)} mil`;
+            } else {
+                return `R$ ${valor.toFixed(2)}`;
+            }
+        }
+
+        function calcularCorrupcao() {
+            const anosGoverno = parseInt(document.getElementById("anos").value);
+            const pesosCorrupcao = {
+                "Senadores": { quantidade: 594, percentualCorruptos: 0.30, mediaDesvio: 10_000_000 },
+                "Deputados": { quantidade: 594, percentualCorruptos: 0.30, mediaDesvio: 5_000_000 },
+                "Governadores": { quantidade: 27, percentualCorruptos: 0.30, mediaDesvio: 50_000_000 },
+                "Prefeitos de Capitais e Grandes Cidades": { quantidade: 200, percentualCorruptos: 0.25, mediaDesvio: 5_000_000 },
+                "Prefeitos": { quantidade: 5570, percentualCorruptos: 0.20, mediaDesvio: 500_000 },
+                "Vereadores de Capitais e Grandes Cidades": { quantidade: 15000, percentualCorruptos: 0.10, mediaDesvio: 50_000 }
+            };
+
+            let totalDesvio = 0;
+            let tabelaResultados = "";
+            
+            for (const cargo in pesosCorrupcao) {
+                const { quantidade, percentualCorruptos, mediaDesvio } = pesosCorrupcao[cargo];
+                const numCorruptos = quantidade * percentualCorruptos;
+                const desvioTotal = numCorruptos * mediaDesvio * anosGoverno;
+                
+                tabelaResultados += `<tr><td>${cargo}</td><td>${formatarValor(desvioTotal)}</td></tr>`;
+                totalDesvio += desvioTotal;
+            }
+
+            document.getElementById("resultado").innerHTML = tabelaResultados;
+            document.getElementById("total").innerText = `Total estimado desviado: ${formatarValor(totalDesvio)}`;
+        }
+    </script>
+</body>
+</html>
